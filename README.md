@@ -13,6 +13,8 @@ Please add below mentioned jar files:
 2. For each service Navigate to the respective project directory.
 3. Run `mvn spring-boot:run`.
 4. For the Complete system to run, each microservice should be in running state
+5. Post starting services, please proceed with user creation, prior to budget and expense creation.
+
 
 ## API Documentation
 Access the Swagger UI 
