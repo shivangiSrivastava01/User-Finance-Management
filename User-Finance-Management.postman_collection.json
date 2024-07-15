@@ -1,0 +1,472 @@
+{
+	"info": {
+		"_postman_id": "db9005b0-1ffc-407d-bc62-95e3cbf7ecd5",
+		"name": "User-Finance-Management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36970450"
+	},
+	"item": [
+		{
+			"name": "User-Service",
+			"item": [
+				{
+					"name": "CreateUser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"Shivangi\",\n    \"email\":\"shivangi@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8083/financeManagement/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"financeManagement",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUserById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/financeManagement/userById?userId=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"financeManagement",
+								"userById"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateUserDetails",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\":1,\n    \"email\":\"Shivangi.juhi@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8083/financeManagement/UserDetailsUpdate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"financeManagement",
+								"UserDetailsUpdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteUser",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/financeManagement/userDeletion/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"financeManagement",
+								"userDeletion",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Budget-Service",
+			"item": [
+				{
+					"name": "CreateBudget",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \n    \"category\":\"abcdf\",\n    \"amount\":30000,\n    \"userId\":1\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/financeManagement/budgetCreation",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"financeManagement",
+								"budgetCreation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetBudgetsWithRespectToUserID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/financeManagement/budgets/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"financeManagement",
+								"budgets",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetBudgetsWithRespectToBudgetID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/financeManagement/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"financeManagement",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetCategoryBudgetByUserID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/financeManagement/userCategoryBudget?userId=2&category=shopping",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"financeManagement",
+								"userCategoryBudget"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "2"
+								},
+								{
+									"key": "category",
+									"value": "shopping"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateBudget",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \n    \"amount\":\"50000\",\n    \"id\":5\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/financeManagement/budgetUpdate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"financeManagement",
+								"budgetUpdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteBudget",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/financeManagement/budgetDeletion/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"financeManagement",
+								"budgetDeletion",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Expense-Service",
+			"item": [
+				{
+					"name": "CreateExpense",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \n    \"category\":\"Shopping\",\n    \"description\":\"Cosmetics\",\n    \"amount\":100000,\n    \"userId\":2\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/financeManagement/expenseCreation",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"financeManagement",
+								"expenseCreation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ExpenseDataWithUserID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/financeManagement/expense/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"financeManagement",
+								"expense",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ExpenseDataWithExpenseID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/financeManagement/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"financeManagement",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetExpenseByUserIDAndCategory",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/financeManagement/userCategoryExpense?userId=1&category=Movies",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"financeManagement",
+								"userCategoryExpense"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "1"
+								},
+								{
+									"key": "category",
+									"value": "Movies"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateExpense",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \n    \"amount\":100,\n    \"id\":2\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/financeManagement/expenseUpdate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"financeManagement",
+								"expenseUpdate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteExpense",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/financeManagement/expenseDeletion/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"financeManagement",
+								"expenseDeletion",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SendNotification",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/financeManagement/notifyUser?budgetCategory=Groceries&budgetAmount=1&expenseDescription=ddfvd&expenseAmount=1232&userEmail=abc@edf.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"financeManagement",
+								"notifyUser"
+							],
+							"query": [
+								{
+									"key": "budgetCategory",
+									"value": "Groceries"
+								},
+								{
+									"key": "budgetAmount",
+									"value": "1"
+								},
+								{
+									"key": "expenseDescription",
+									"value": "ddfvd"
+								},
+								{
+									"key": "expenseAmount",
+									"value": "1232"
+								},
+								{
+									"key": "userEmail",
+									"value": "abc@edf.com"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
