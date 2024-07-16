@@ -30,7 +30,7 @@ public class NotificationController {
                 expenseAmount, budgetAmount, budgetCategory, userEmail, expenseDescription);
 
         String text = "Dear User,\n\n" +
-                "We want to inform you that your expense of **"+expenseAmount+"** has exceeded your budget of **"+budgetAmount+"** for **"+budgetCategory+"**.\n\n" +
+                "We want to inform you that your total expense of **"+expenseAmount+"** has exceeded your budget of **"+budgetAmount+"** for **"+budgetCategory+"**.\n\n" +
                 "Description of Last Expense: "+expenseDescription+"\n\n" +
                 "Please review your expenses at your earliest convenience.\n\n" +
                 "Best regards!";

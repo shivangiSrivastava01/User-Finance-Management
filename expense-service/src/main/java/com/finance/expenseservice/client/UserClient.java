@@ -28,7 +28,7 @@ public class UserClient {
 
             return restTemplate.getForObject(userServiceUrl, UserDTO.class);
         }catch (Exception e){
-            throw new ExpenseCustomException("Budget for the requested User Id and category does not exists");
+            throw new ExpenseCustomException("User for the requested User Id and category does not exists");
         }
     }
 }

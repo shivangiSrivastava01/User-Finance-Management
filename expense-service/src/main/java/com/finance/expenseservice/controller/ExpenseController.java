@@ -94,7 +94,7 @@ public class ExpenseController {
         Usage: This API fetches the expense with respect to specific user id and category.
     */
 
-    @Operation(summary = "Get Category expense by userid")
+    @Operation(summary = "Get Category expense by userid and category")
     @GetMapping("/userCategoryExpense")
     public ResponseEntity<Object> getUserExpenseSpecificToUserCategory(@RequestParam Long userId, @RequestParam String category) {
         try {
@@ -118,15 +118,6 @@ public class ExpenseController {
     public ResponseEntity<String> logExpense(@Valid @RequestBody Expense expense) {
         try {
 
-            UserDTO userData =  userClient.getUser(expense.getUserId());
-
-            //checking here, if user for which expense has to be created exists in db.
-            if(userData.getEmail()==null){
-                throw new ExpenseCustomException("User do not exists in DB");
-            }
-
-            BudgetDTO budget =  expenseClient.getBudget(expense);
-
             log.info("Expense creation for user starts::");
             Expense expenseData = expenseService.logExpense(expense);
 
@@ -134,9 +125,8 @@ public class ExpenseController {
                 throw new ExpenseCustomException("Expense Not Found!!!!!");
             }
 
-            //call to notification service happens here
-            log.info("Call to notification service starts in log expense method::::");
-            String message = callNotificationService(budget,expense,userData);
+            //check if expenseTotalAmount>budgetAmount for a category
+            String message = checkIfExpenseTotalAmountExceedsBudget(expenseData);
             log.info(message);
 
             if(!Objects.equals(message, "")){
@@ -155,20 +145,34 @@ public class ExpenseController {
         }
     }
 
-    private String callNotificationService(BudgetDTO budget, Expense expense, UserDTO userData) {
+    private String checkIfExpenseTotalAmountExceedsBudget(Expense expenseData) {
 
-        log.info("callNotificationService method starts::");
+        log.info("checkIfExpenseTotalAmountExceedsBudget method starts::");
+
+        UserDTO userData =  userClient.getUser(expenseData.getUserId());
+
+        //checking here, if user exists in db.
+        if(userData.getEmail()==null){
+            throw new ExpenseCustomException("User do not exists in DB");
+        }
+
+        //Fetching budget data to send it in notification service call, for budgetAmount and budgetCategory
+        BudgetDTO budget =  expenseClient.getBudget(expenseData);
+
         double budgetAmount = budget.getAmount();
         String message = "";
 
-        double categoryExpenseTotalAmount = expenseService.getCategoryExpenseTotalAmount(expense.getUserId(),expense.getCategory());
+        double categoryExpenseTotalAmount = expenseService.getCategoryExpenseTotalAmount(expenseData.getUserId(),expenseData.getCategory());
 
+        //here we check if the expense total amount exceeds the budget amount then the notification service call happens
         if(categoryExpenseTotalAmount>budgetAmount){
+
+            log.info("Calling notification service as the expenseTotalAmount exceeds the budgetAmount::");
             String notificationServiceUrl = UriComponentsBuilder.fromHttpUrl("http://localhost:8082/financeManagement/notifyUser")
                     .queryParam("budgetCategory", budget.getCategory())
                     .queryParam("budgetAmount", budget.getAmount())
-                    .queryParam("expenseDescription", expense.getDescription())
-                    .queryParam("expenseAmount", expense.getAmount())
+                    .queryParam("expenseDescription", expenseData.getDescription())
+                    .queryParam("expenseAmount", categoryExpenseTotalAmount)
                     .queryParam("userEmail", userData.getEmail())
                     .toUriString();
 
@@ -176,7 +180,7 @@ public class ExpenseController {
         }
         log.info("Message Retrieved:: {}",message);
         return message;
-}
+    }
 
 
     /*
@@ -187,20 +191,11 @@ public class ExpenseController {
     public ResponseEntity<String> updateExpense(@Valid @RequestBody Expense expense) {
         try {
 
+            //expense should be updated and then call notification service if expenseAmount exceeds budgetAmount
             Expense expenseData = expenseService.updateExpense(expense);
 
-            UserDTO userData =  userClient.getUser(expenseData.getUserId());
-
-            //checking here, if user exists in db.
-            if(userData.getEmail()==null){
-                throw new ExpenseCustomException("User do not exists in DB");
-            }
-
-            BudgetDTO budget =  expenseClient.getBudget(expenseData);
-
-            //call to notification service happens here
-            log.info("Call to notification service starts in update method::::");
-            String message = callNotificationService(budget,expenseData,userData);
+            //check if expenseTotalAmount>budgetAmount for a category
+            String message = checkIfExpenseTotalAmountExceedsBudget(expenseData);
             log.info(message);
 
             if(!Objects.equals(message, "")){

@@ -136,9 +136,9 @@ class ExpenseControllerTest {
 
     @Test
     void testLogExpense_UserNotFound() {
-        when(userClient.getUser(1L)).thenReturn(userDTO);
-        when(budgetClient.getBudget(any(Expense.class))).thenReturn(budgetDTO);
-        when(expenseService.logExpense(any(Expense.class))).thenThrow(new ExpenseCustomException("User do not exists in DB"));
+        lenient().when(userClient.getUser(1L)).thenReturn(userDTO);
+        lenient().when(budgetClient.getBudget(any(Expense.class))).thenReturn(budgetDTO);
+        lenient().when(expenseService.logExpense(any(Expense.class))).thenThrow(new ExpenseCustomException("User do not exists in DB"));
 
         ResponseEntity<String> response = expenseController.logExpense(expense);
 
