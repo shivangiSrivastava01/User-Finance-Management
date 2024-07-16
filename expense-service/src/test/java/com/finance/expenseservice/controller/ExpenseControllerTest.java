@@ -161,8 +161,8 @@ class ExpenseControllerTest {
 
     @Test
     void testUpdateExpense_UserNotFound() {
-        when(expenseService.updateExpense(any(Expense.class))).thenReturn(expense);
-        when(userClient.getUser(1L)).thenReturn(new UserDTO());
+        lenient().when(expenseService.updateExpense(any(Expense.class))).thenReturn(expense);
+        lenient().when(userClient.getUser(1L)).thenReturn(new UserDTO());
 
         ResponseEntity<String> response = expenseController.updateExpense(expense);
 
