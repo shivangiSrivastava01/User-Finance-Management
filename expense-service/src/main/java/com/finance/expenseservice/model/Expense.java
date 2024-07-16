@@ -22,7 +22,6 @@ public class Expense {
     @PositiveOrZero(message="Amount should be zero or positive")
     private double amount;
 
-    //here description is marked as not null, because we need to send the expense description in notification mail
     @Column(nullable = false)
     private String description;
 
