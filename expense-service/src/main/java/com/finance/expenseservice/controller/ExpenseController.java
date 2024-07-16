@@ -208,7 +208,11 @@ public class ExpenseController {
             }
 
             return new ResponseEntity<>("Expense updated successfully", HttpStatus.OK);
-        } catch (Exception e) {
+        }
+        catch (ExpenseCustomException e) {
+            log.error("Exception occurred while logging the expense data: {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }catch (Exception e) {
             log.error("Exception occurred while updating the expense data: {}", e.getMessage());
             return new ResponseEntity<>("Error updating expense: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -223,7 +227,10 @@ public class ExpenseController {
         try {
             expenseService.deleteExpense(id);
             return new ResponseEntity<>("Expense deleted successfully", HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (ExpenseCustomException e) {
+            log.error("Exception occurred while deleting the expense: {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }catch (Exception e) {
             log.error("Exception occurred while deleting the expense data: {}", e.getMessage());
             return new ResponseEntity<>("Error deleting expense: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

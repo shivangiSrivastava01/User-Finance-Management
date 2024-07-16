@@ -39,7 +39,7 @@ class UserControllerTest {
 
         ResponseEntity<String> response = userController.createUser(user);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
     }
 
     @Test

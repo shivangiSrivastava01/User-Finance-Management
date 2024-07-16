@@ -40,7 +40,10 @@ public class UserController {
 
         } catch (UserCustomException e) {
             log.error("Exception occurred while creating the user data: {}", e.getMessage());
-            return new ResponseEntity<>("Error creating user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Error creating user: " + e.getMessage(), HttpStatus.FORBIDDEN);
+        }catch (Exception e) {
+            log.error("Exception occurred while creating User!!!: {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -80,7 +83,10 @@ public class UserController {
 
         } catch (UserCustomException e) {
             log.info("Exception occurred while updating the user data: {}", e.getMessage());
-            return new ResponseEntity<>("Error updating user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Error updating user: " + e.getMessage(), HttpStatus.FORBIDDEN);
+        }catch (Exception e) {
+            log.error("Exception occurred while updating the User!!!: {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -96,7 +102,10 @@ public class UserController {
             return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
         } catch (UserCustomException e) {
             log.info("Exception occurred while deleting the user data: {}", e.getMessage());
-            return new ResponseEntity<>("Error deleting user: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Error deleting user: " + e.getMessage(), HttpStatus.FORBIDDEN);
+        }catch (Exception e) {
+            log.error("Exception occurred while deleting the User!!!: {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

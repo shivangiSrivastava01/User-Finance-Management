@@ -106,8 +106,11 @@ public class BudgetController {
             }
             return new ResponseEntity<>("Budget created successfully", HttpStatus.CREATED);
         } catch (BudgetCustomException e) {
-            log.info("Exception occurred while creating the budget data: {}", e.getMessage());
+            log.error("Exception occurred while creating the budget data: {}", e.getMessage());
             return new ResponseEntity<>("Error creating budget: " + e.getMessage(), HttpStatus.FORBIDDEN);
+        }catch (Exception e) {
+            log.error("Exception occurred while creating the budget!!!: {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -123,6 +126,9 @@ public class BudgetController {
         } catch (BudgetCustomException e) {
             log.error("Exception occurred while updating the budget data: {}", e.getMessage());
             return new ResponseEntity<>("Error updating budget: " + e.getMessage(), HttpStatus.FORBIDDEN);
+        }catch (Exception e) {
+            log.error("Exception occurred while updating the budget!!: {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -138,6 +144,9 @@ public class BudgetController {
         } catch (BudgetCustomException e) {
             log.error("Exception occurred while deleting the budget data: {}", e.getMessage());
             return new ResponseEntity<>("Error deleting budget: " + e.getMessage(), HttpStatus.FORBIDDEN);
+        }catch (Exception e) {
+            log.error("Exception occurred while deleting the budget!!!: {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

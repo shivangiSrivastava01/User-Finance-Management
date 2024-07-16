@@ -166,8 +166,7 @@ class ExpenseControllerTest {
 
         ResponseEntity<String> response = expenseController.updateExpense(expense);
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("Error updating expense: User do not exists in DB", response.getBody());
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
     }
 
     @Test
