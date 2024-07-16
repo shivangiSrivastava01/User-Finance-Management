@@ -1,6 +1,7 @@
 package com.finance.notificationservice.controller;
 
 import com.finance.notificationservice.service.NotificationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/financeManagement")
+@Tag(name = "Notification Service", description = "Operations pertaining to notification in Finance Management System")
 public class NotificationController {
 
     private final NotificationService notificationService;

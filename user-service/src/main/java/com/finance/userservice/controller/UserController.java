@@ -4,6 +4,7 @@ import com.finance.userservice.exception.UserCustomException;
 import com.finance.userservice.model.User;
 import com.finance.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("/financeManagement")
+@Tag(name = "User Service", description = "Operations pertaining to user in Finance Management System")
 public class UserController {
 
     private final UserService userService;

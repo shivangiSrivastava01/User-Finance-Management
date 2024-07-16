@@ -8,6 +8,7 @@ import com.finance.expenseservice.dto.BudgetDTO;
 import com.finance.expenseservice.model.Expense;
 import com.finance.expenseservice.service.ExpenseService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.util.Optional;
 @RestController
 @Slf4j
 @RequestMapping("/financeManagement")
+@Tag(name = "Expense Service", description = "Operations pertaining to expense in Finance Management System")
 public class ExpenseController {
 
 

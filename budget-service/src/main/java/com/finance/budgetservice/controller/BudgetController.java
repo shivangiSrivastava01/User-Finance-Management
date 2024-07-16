@@ -21,7 +21,7 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("/financeManagement")
-@Tag(name = "Budget Management System", description = "Operations pertaining to budget in Budget Management System")
+@Tag(name = "Budget Service", description = "Operations pertaining to budget in Finance Management System")
 public class BudgetController {
 
 
