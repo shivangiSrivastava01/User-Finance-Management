@@ -118,6 +118,13 @@ public class ExpenseController {
     public ResponseEntity<String> logExpense(@Valid @RequestBody Expense expense) {
         try {
 
+            UserDTO userData =  userClient.getUser(expense.getUserId());
+
+            //checking here, if user for which expense will be logged exists in db.
+            if(userData.getEmail()==null){
+                throw new ExpenseCustomException("User do not exists in DB");
+            }
+
             log.info("Expense creation for user starts::");
             Expense expenseData = expenseService.logExpense(expense);
 
@@ -126,7 +133,7 @@ public class ExpenseController {
             }
 
             //check if expenseTotalAmount>budgetAmount for a category
-            String message = checkIfExpenseTotalAmountExceedsBudget(expenseData);
+            String message = checkIfExpenseTotalAmountExceedsBudget(userData,expenseData);
             log.info(message);
 
             if(!Objects.equals(message, "")){
@@ -145,16 +152,9 @@ public class ExpenseController {
         }
     }
 
-    private String checkIfExpenseTotalAmountExceedsBudget(Expense expenseData) {
+    private String checkIfExpenseTotalAmountExceedsBudget(UserDTO userData,Expense expenseData) {
 
         log.info("checkIfExpenseTotalAmountExceedsBudget method starts::");
-
-        UserDTO userData =  userClient.getUser(expenseData.getUserId());
-
-        //checking here, if user exists in db.
-        if(userData.getEmail()==null){
-            throw new ExpenseCustomException("User do not exists in DB");
-        }
 
         //Fetching budget data to send it in notification service call, for budgetAmount and budgetCategory
         BudgetDTO budget =  expenseClient.getBudget(expenseData);
@@ -191,11 +191,18 @@ public class ExpenseController {
     public ResponseEntity<String> updateExpense(@Valid @RequestBody Expense expense) {
         try {
 
+            UserDTO userData =  userClient.getUser(expense.getUserId());
+
+            //checking here, if user for which expense will be updated exists in db.
+            if(userData.getEmail()==null){
+                throw new ExpenseCustomException("User do not exists in DB");
+            }
+
             //expense should be updated and then call notification service if expenseAmount exceeds budgetAmount
             Expense expenseData = expenseService.updateExpense(expense);
 
             //check if expenseTotalAmount>budgetAmount for a category
-            String message = checkIfExpenseTotalAmountExceedsBudget(expenseData);
+            String message = checkIfExpenseTotalAmountExceedsBudget(userData,expenseData);
             log.info(message);
 
             if(!Objects.equals(message, "")){
