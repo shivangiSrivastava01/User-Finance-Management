@@ -206,7 +206,7 @@ public class ExpenseController {
             log.info(message);
 
             if(!Objects.equals(message, "")){
-                return new ResponseEntity<>(message, HttpStatus.NOT_ACCEPTABLE);
+                return new ResponseEntity<>(message, HttpStatus.OK);
             }
 
             return new ResponseEntity<>("Expense updated successfully", HttpStatus.OK);
