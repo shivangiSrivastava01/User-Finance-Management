@@ -30,14 +30,14 @@ public class ExpenseController {
 
 
     private final ExpenseService expenseService;
-    private final BudgetClient expenseClient;
+    private final BudgetClient budgetClient;
     private final RestTemplate restTemplate;
     private final UserClient userClient;
 
     @Autowired
-    public ExpenseController(ExpenseService expenseService, BudgetClient expenseClient, RestTemplate restTemplate, UserClient userClient) {
+    public ExpenseController(ExpenseService expenseService, BudgetClient budgetClient, RestTemplate restTemplate, UserClient userClient) {
         this.expenseService = expenseService;
-        this.expenseClient = expenseClient;
+        this.budgetClient = budgetClient;
         this.restTemplate = restTemplate;
         this.userClient = userClient;
     }
@@ -157,7 +157,7 @@ public class ExpenseController {
         log.info("checkIfExpenseTotalAmountExceedsBudget method starts::");
 
         //Fetching budget data to send it in notification service call, for budgetAmount and budgetCategory
-        BudgetDTO budget =  expenseClient.getBudget(expenseData);
+        BudgetDTO budget =  budgetClient.getBudget(expenseData);
 
         double budgetAmount = budget.getAmount();
         String message = "";
