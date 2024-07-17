@@ -5,7 +5,8 @@ import com.finance.expenseservice.client.UserClient;
 import com.finance.expenseservice.dto.UserDTO;
 import com.finance.expenseservice.exception.ExpenseCustomException;
 import com.finance.expenseservice.dto.BudgetDTO;
-import com.finance.expenseservice.model.Expense;
+import com.finance.expenseservice.model.ExpenseRequest;
+import com.finance.expenseservice.model.ExpenseResponse;
 import com.finance.expenseservice.service.ExpenseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,11 +48,13 @@ public class ExpenseController {
     */
     @Operation(summary = "View a list of available expense log")
     @GetMapping("/expense/{userId}")
-    public ResponseEntity<List<Expense>> getUserExpense(@PathVariable Long userId) {
+    public ResponseEntity<List<ExpenseResponse>> getUserExpense(@PathVariable Long userId) {
         try {
-            Optional<List<Expense>> expense = expenseService.getUserSpecificExpense(userId);
+            Optional<List<ExpenseResponse>> expense = expenseService.getUserSpecificExpense(userId);
             if (expense.isPresent() && !expense.get().isEmpty()) {
                 log.info("Expense for userID: {} is Found!!!!!!",userId);
+                
+                
                 return new ResponseEntity<>(expense.get(), HttpStatus.OK);
             } else {
                 throw new ExpenseCustomException("Expense not found for User Id: " + userId);
@@ -71,9 +74,9 @@ public class ExpenseController {
 
     @Operation(summary = "View expense with respect to Expense id")
     @GetMapping("/{expenseId}")
-    public ResponseEntity<Expense> getExpenseWithId(@PathVariable Long expenseId) {
+    public ResponseEntity<ExpenseResponse> getExpenseWithId(@PathVariable Long expenseId) {
         try {
-            Optional<Expense> expense = expenseService.getExpenseWithId(expenseId);
+            Optional<ExpenseResponse> expense = expenseService.getExpenseWithId(expenseId);
             if (expense.isPresent()) {
 
                 log.info("Expense Found for user with respect to expenseID: {}", expenseId);
@@ -98,7 +101,7 @@ public class ExpenseController {
     @GetMapping("/userCategoryExpense")
     public ResponseEntity<Object> getUserExpenseSpecificToUserCategory(@RequestParam Long userId, @RequestParam String category) {
         try {
-            List<Expense> expenseList = expenseService.getUserCategoryExpense(userId, category);
+            List<ExpenseResponse> expenseList = expenseService.getUserCategoryExpense(userId, category);
             return new ResponseEntity<>(expenseList, HttpStatus.OK);
         } catch (ExpenseCustomException e) {
             String errorMessage = "Expense for user with ID " + userId + " and category " + category + " not found.";
@@ -115,10 +118,10 @@ public class ExpenseController {
     */
     @Operation(summary = "Log an Expense")
     @PostMapping("/expenseCreation")
-    public ResponseEntity<String> logExpense(@Valid @RequestBody Expense expense) {
+    public ResponseEntity<String> logExpense(@Valid @RequestBody ExpenseRequest expenseRequest) {
         try {
 
-            UserDTO userData =  userClient.getUser(expense.getUserId());
+            UserDTO userData =  userClient.getUser(expenseRequest.getUserId());
 
             //checking here, if user for which expense will be logged exists in db.
             if(userData.getEmail()==null){
@@ -126,7 +129,7 @@ public class ExpenseController {
             }
 
             log.info("Expense creation for user starts::");
-            Expense expenseData = expenseService.logExpense(expense);
+            var expenseData = expenseService.logExpense(expenseRequest);
 
             if(expenseData==null){
                 throw new ExpenseCustomException("Expense Not Found!!!!!");
@@ -152,7 +155,7 @@ public class ExpenseController {
         }
     }
 
-    private String checkIfExpenseTotalAmountExceedsBudget(UserDTO userData,Expense expenseData) {
+    private String checkIfExpenseTotalAmountExceedsBudget(UserDTO userData,ExpenseResponse expenseData) {
 
         log.info("checkIfExpenseTotalAmountExceedsBudget method starts::");
 
@@ -188,18 +191,17 @@ public class ExpenseController {
     */
     @Operation(summary = "Update a expense")
     @PutMapping("/expenseUpdate")
-    public ResponseEntity<String> updateExpense(@Valid @RequestBody Expense expense) {
+    public ResponseEntity<String> updateExpense(@Valid @RequestBody ExpenseRequest expenseRequest) {
         try {
+            //expense should be updated and then call notification service if expenseAmount exceeds budgetAmount
+            var expenseData = expenseService.updateExpense(expenseRequest);
 
-            UserDTO userData =  userClient.getUser(expense.getUserId());
+            UserDTO userData =  userClient.getUser(expenseData.getUserId());
 
             //checking here, if user for which expense will be updated exists in db.
             if(userData.getEmail()==null){
                 throw new ExpenseCustomException("User do not exists in DB");
             }
-
-            //expense should be updated and then call notification service if expenseAmount exceeds budgetAmount
-            Expense expenseData = expenseService.updateExpense(expense);
 
             //check if expenseTotalAmount>budgetAmount for a category
             String message = checkIfExpenseTotalAmountExceedsBudget(userData,expenseData);

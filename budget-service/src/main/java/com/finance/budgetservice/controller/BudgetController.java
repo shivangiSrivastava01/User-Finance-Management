@@ -3,8 +3,10 @@ package com.finance.budgetservice.controller;
 import com.finance.budgetservice.client.UserClient;
 import com.finance.budgetservice.dto.UserDTO;
 import com.finance.budgetservice.exception.BudgetCustomException;
-import com.finance.budgetservice.model.Budget;
+import com.finance.budgetservice.model.BudgetRequest;
+import com.finance.budgetservice.model.BudgetResponse;
 import com.finance.budgetservice.service.BudgetService;
+import com.finance.budgetservice.service.BudgetServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -29,7 +31,7 @@ public class BudgetController {
     private final UserClient userClient;
 
     @Autowired
-    public BudgetController(BudgetService budgetService,UserClient userClient) {
+    public BudgetController(BudgetServiceImpl budgetService, UserClient userClient) {
         this.budgetService = budgetService;
         this.userClient = userClient;
 
@@ -40,9 +42,9 @@ public class BudgetController {
     */
     @Operation(summary = "View a list of available budgets with respect to UserID")
     @GetMapping("/budgets/{userId}")
-    public ResponseEntity<List<Budget>> getUserBudget(@PathVariable Long userId) {
+    public ResponseEntity<List<BudgetResponse>> getUserBudget(@PathVariable Long userId) {
         try {
-            Optional<List<Budget>> budgets = budgetService.getUserSpecificBudget(userId);
+            Optional<List<BudgetResponse>> budgets = budgetService.getUserSpecificBudget(userId);
             if (budgets.isPresent() && !budgets.get().isEmpty()) {
 
                 log.info("Budget for userID: {} is Found!!!!!!",userId);
@@ -65,9 +67,9 @@ public class BudgetController {
     */
     @Operation(summary = "View budget with respect to Budget id")
     @GetMapping("/{budgetId}")
-    public ResponseEntity<Budget> getBudgetWithId(@PathVariable Long budgetId) {
+    public ResponseEntity<BudgetResponse> getBudgetWithId(@PathVariable Long budgetId) {
         try {
-            Optional<Budget> budget = budgetService.getBudgetFromId(budgetId);
+            Optional<BudgetResponse> budget = budgetService.getBudgetFromId(budgetId);
             if (budget.isPresent()) {
                 log.info("Budget Found for user with respect to budgetID: {}", budgetId);
                 return new ResponseEntity<>(budget.get(), HttpStatus.OK);
@@ -89,9 +91,9 @@ public class BudgetController {
 
     @Operation(summary = "Add a budget")
     @PostMapping("/budgetCreation")
-    public ResponseEntity<String> createBudget(@Valid @RequestBody Budget budget) {
+    public ResponseEntity<String> createBudget(@Valid @RequestBody BudgetRequest budgetRequest) {
         try {
-            UserDTO userData =  userClient.getUser(budget.getUserId());
+            UserDTO userData =  userClient.getUser(budgetRequest.getUserId());
 
             //checking here, if user for which budget will be created exists in db.
             if(userData==null || userData.getEmail()==null){
@@ -99,7 +101,8 @@ public class BudgetController {
             }
 
             log.info("Budget creation starts:::");
-            Budget budgetData = budgetService.createBudget(budget);
+
+            var budgetData  = budgetService.createBudget(budgetRequest);
 
             if(budgetData==null){
                 throw new BudgetCustomException("Budget do not exists in DB::");
@@ -110,7 +113,7 @@ public class BudgetController {
             return new ResponseEntity<>("Error creating budget: " + e.getMessage(), HttpStatus.FORBIDDEN);
         }catch (Exception e) {
             log.error("Exception occurred while creating the budget!!!: {}", e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Error creating budget: " + e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -119,16 +122,16 @@ public class BudgetController {
     */
     @Operation(summary = "Update a budget")
     @PutMapping("/budgetUpdate")
-    public ResponseEntity<String> updateBudget(@Valid @RequestBody Budget budget) {
+    public ResponseEntity<String> updateBudget(@Valid @RequestBody BudgetRequest budgetRequest) {
         try {
-            budgetService.updateBudget(budget);
+            budgetService.updateBudget(budgetRequest);
             return new ResponseEntity<>("Budget updated successfully", HttpStatus.OK);
         } catch (BudgetCustomException e) {
             log.error("Exception occurred while updating the budget data: {}", e.getMessage());
             return new ResponseEntity<>("Error updating budget: " + e.getMessage(), HttpStatus.FORBIDDEN);
         }catch (Exception e) {
             log.error("Exception occurred while updating the budget!!: {}", e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Error updating budget: " + e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -155,9 +158,9 @@ public class BudgetController {
     */
     @Operation(summary = "Get Category budget by userid")
     @GetMapping("/userCategoryBudget")
-    public ResponseEntity<Budget> getUserBudgetSpecificToCategory(@RequestParam Long userId, @RequestParam String category) {
+    public ResponseEntity<BudgetResponse> getUserBudgetSpecificToCategory(@RequestParam Long userId, @RequestParam String category) {
         try {
-            Budget budget = budgetService.getUserCategoryBudget(userId, category.toLowerCase());
+            BudgetResponse budget = budgetService.getUserCategoryBudget(userId, category.toLowerCase());
             return new ResponseEntity<>(budget, HttpStatus.OK);
         } catch (BudgetCustomException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

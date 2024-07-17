@@ -1,12 +1,14 @@
 package com.finance.userservice.controller;
 
 import com.finance.userservice.exception.UserCustomException;
-import com.finance.userservice.model.User;
+import com.finance.userservice.model.UserRequest;
+import com.finance.userservice.model.UserResponse;
 import com.finance.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @Autowired
     public UserController(UserService userService){
         this.userService = userService;
     }
@@ -29,10 +32,10 @@ public class UserController {
     */
     @Operation(summary = "Add a user")
     @PostMapping("/users")
-    public ResponseEntity<String> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<String> createUser(@RequestBody @Valid UserRequest userRequest) {
         try {
             log.info("Inside createUser method::");
-            User userData = userService.createUser(user);
+            UserResponse userData = userService.createUser(userRequest);
             if(userData==null){
                 throw new UserCustomException("User do not exists in DB");
             }
@@ -52,9 +55,9 @@ public class UserController {
     */
     @Operation(summary = "View user with respect to user id")
     @GetMapping("/userById")
-    public ResponseEntity<User> getUserWithId(@RequestParam Long userId) {
+    public ResponseEntity<UserResponse> getUserWithId(@RequestParam Long userId) {
         try {
-            Optional<User> user = userService.getUserFromId(userId);
+            Optional<UserResponse> user = userService.getUserFromId(userId);
             if (user.isPresent()) {
                 log.info("Get user with userID :: {}", user.get());
                 return new ResponseEntity<>(user.get(), HttpStatus.OK);
@@ -75,10 +78,10 @@ public class UserController {
     */
     @Operation(summary = "Update User Details")
     @PutMapping("/UserDetailsUpdate")
-    public ResponseEntity<String> updateUser(@Valid @RequestBody User user) {
+    public ResponseEntity<String> updateUser(@Valid @RequestBody UserRequest userRequest) {
         try {
             log.info("Inside update method::");
-            userService.updateUserDetails(user);
+            userService.updateUserDetails(userRequest);
             return new ResponseEntity<>("User details updated successfully", HttpStatus.OK);
 
         } catch (UserCustomException e) {

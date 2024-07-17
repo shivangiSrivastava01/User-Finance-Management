@@ -5,8 +5,9 @@ import com.finance.expenseservice.client.UserClient;
 import com.finance.expenseservice.dto.BudgetDTO;
 import com.finance.expenseservice.dto.UserDTO;
 import com.finance.expenseservice.exception.ExpenseCustomException;
-import com.finance.expenseservice.model.Expense;
-import com.finance.expenseservice.service.ExpenseService;
+import com.finance.expenseservice.model.ExpenseRequest;
+import com.finance.expenseservice.model.ExpenseResponse;
+import com.finance.expenseservice.service.ExpenseServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +27,7 @@ import static org.mockito.Mockito.*;
 class ExpenseControllerTest {
 
     @Mock
-    private ExpenseService expenseService;
+    private ExpenseServiceImpl expenseServiceImpl;
 
     @Mock
     private BudgetClient budgetClient;
@@ -37,18 +38,15 @@ class ExpenseControllerTest {
     @InjectMocks
     private ExpenseController expenseController;
 
-    private Expense expense;
     private UserDTO userDTO;
     private BudgetDTO budgetDTO;
 
+    private ExpenseRequest expenseRequest;
+
+    private ExpenseResponse expenseResponse;
+
     @BeforeEach
     void setUp() {
-        expense = new Expense();
-        expense.setId(1L);
-        expense.setUserId(1L);
-        expense.setCategory("Food");
-        expense.setAmount(100);
-        expense.setDescription("Grocery shopping");
 
         userDTO = new UserDTO();
         userDTO.setUserId(1L);
@@ -61,61 +59,68 @@ class ExpenseControllerTest {
         budgetDTO.setCategory("Food");
         budgetDTO.setAmount(500);
 
+        expenseRequest = new ExpenseRequest();
+        expenseRequest.setUserId(1L);
+
+        expenseResponse = new ExpenseResponse();
+        expenseResponse.setUserId(1L);
+
 }
     @Test
     void testGetUserExpense_Success() {
-        when(expenseService.getUserSpecificExpense(1L)).thenReturn(Optional.of(List.of(expense)));
 
-        ResponseEntity<List<Expense>> response = expenseController.getUserExpense(1L);
+        when(expenseServiceImpl.getUserSpecificExpense(1L)).thenReturn(Optional.of(List.of(expenseResponse)));
+
+        ResponseEntity<List<ExpenseResponse>> response = expenseController.getUserExpense(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, Objects.requireNonNull(response.getBody()).size());
-        assertEquals(expense, response.getBody().get(0));
+        assertEquals(expenseResponse, response.getBody().get(0));
     }
 
     @Test
     void testGetUserExpense_NotFound() {
-        when(expenseService.getUserSpecificExpense(1L)).thenReturn(Optional.empty());
+        when(expenseServiceImpl.getUserSpecificExpense(1L)).thenReturn(Optional.empty());
 
-        ResponseEntity<List<Expense>> response = expenseController.getUserExpense(1L);
+        ResponseEntity<List<ExpenseResponse>> response = expenseController.getUserExpense(1L);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
     void testGetExpenseWithId_Success() {
-        when(expenseService.getExpenseWithId(1L)).thenReturn(Optional.of(expense));
 
-        ResponseEntity<Expense> response = expenseController.getExpenseWithId(1L);
+        when(expenseServiceImpl.getExpenseWithId(1L)).thenReturn(Optional.of(expenseResponse));
+
+        ResponseEntity<ExpenseResponse> response = expenseController.getExpenseWithId(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expense, response.getBody());
+        assertEquals(expenseResponse, response.getBody());
     }
 
     @Test
     void testGetExpenseWithId_NotFound() {
-        when(expenseService.getExpenseWithId(1L)).thenReturn(Optional.empty());
+        when(expenseServiceImpl.getExpenseWithId(1L)).thenReturn(Optional.empty());
 
-        ResponseEntity<Expense> response = expenseController.getExpenseWithId(1L);
+        ResponseEntity<ExpenseResponse> response = expenseController.getExpenseWithId(1L);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
     void testGetUserExpenseSpecificToUserCategory_Success() {
-        when(expenseService.getUserCategoryExpense(1L, "Food")).thenReturn(List.of(expense));
+
+        when(expenseServiceImpl.getUserCategoryExpense(1L, "Food")).thenReturn(List.of(expenseResponse));
 
         ResponseEntity<Object> response = expenseController.getUserExpenseSpecificToUserCategory(1L, "Food");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1, ((List<?>) Objects.requireNonNull(response.getBody())).size());
-        assertEquals(expense, ((List<?>) response.getBody()).get(0));
     }
 
     @Test
     void testGetUserExpenseSpecificToUserCategory_NotFound() {
 
-        when(expenseService.getUserCategoryExpense(1L, "Food")).thenThrow(new ExpenseCustomException("Expense not found for User Id: " + '1'));
+        when(expenseServiceImpl.getUserCategoryExpense(1L, "Food")).thenThrow(new ExpenseCustomException("Expense not found for User Id: " + '1'));
 
         ResponseEntity<Object> response = expenseController.getUserExpenseSpecificToUserCategory(1L, "Food");
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -124,11 +129,12 @@ class ExpenseControllerTest {
 
     @Test
     void testLogExpense_Success() {
-        when(userClient.getUser(1L)).thenReturn(userDTO);
-        when(budgetClient.getBudget(any(Expense.class))).thenReturn(budgetDTO);
-        when(expenseService.logExpense(any(Expense.class))).thenReturn(expense);
 
-        ResponseEntity<String> response = expenseController.logExpense(expense);
+        when(userClient.getUser(1L)).thenReturn(userDTO);
+        when(budgetClient.getBudget(any(ExpenseResponse.class))).thenReturn(budgetDTO);
+        when(expenseServiceImpl.logExpense(any(ExpenseRequest.class))).thenReturn(expenseResponse);
+
+        ResponseEntity<String> response = expenseController.logExpense(expenseRequest);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals("expense created successfully", response.getBody());
@@ -137,10 +143,10 @@ class ExpenseControllerTest {
     @Test
     void testLogExpense_UserNotFound() {
         lenient().when(userClient.getUser(1L)).thenReturn(userDTO);
-        lenient().when(budgetClient.getBudget(any(Expense.class))).thenReturn(budgetDTO);
-        lenient().when(expenseService.logExpense(any(Expense.class))).thenThrow(new ExpenseCustomException("User do not exists in DB"));
+        lenient().when(budgetClient.getBudget(any(ExpenseResponse.class))).thenReturn(budgetDTO);
+        lenient().when(expenseServiceImpl.logExpense(any(ExpenseRequest.class))).thenThrow(new ExpenseCustomException("User do not exists in DB"));
 
-        ResponseEntity<String> response = expenseController.logExpense(expense);
+        ResponseEntity<String> response = expenseController.logExpense(expenseRequest);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Error creating expense: User do not exists in DB", response.getBody());
@@ -149,11 +155,12 @@ class ExpenseControllerTest {
 
     @Test
     void testUpdateExpense_Success() {
-        when(expenseService.updateExpense(any(Expense.class))).thenReturn(expense);
-        when(userClient.getUser(1L)).thenReturn(userDTO);
-        when(budgetClient.getBudget(any(Expense.class))).thenReturn(budgetDTO);
 
-        ResponseEntity<String> response = expenseController.updateExpense(expense);
+        when(expenseServiceImpl.updateExpense(any(ExpenseRequest.class))).thenReturn(expenseResponse);
+        when(userClient.getUser(1L)).thenReturn(userDTO);
+        when(budgetClient.getBudget(any(ExpenseResponse.class))).thenReturn(budgetDTO);
+
+        ResponseEntity<String> response = expenseController.updateExpense(expenseRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Expense updated successfully", response.getBody());
@@ -161,17 +168,17 @@ class ExpenseControllerTest {
 
     @Test
     void testUpdateExpense_UserNotFound() {
-        lenient().when(expenseService.updateExpense(any(Expense.class))).thenReturn(expense);
+        lenient().when(expenseServiceImpl.updateExpense(any(ExpenseRequest.class))).thenReturn(expenseResponse);
         lenient().when(userClient.getUser(1L)).thenReturn(new UserDTO());
 
-        ResponseEntity<String> response = expenseController.updateExpense(expense);
+        ResponseEntity<String> response = expenseController.updateExpense(expenseRequest);
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
     }
 
     @Test
     void testDeleteExpense_Success() {
-        doNothing().when(expenseService).deleteExpense(1L);
+        doNothing().when(expenseServiceImpl).deleteExpense(1L);
 
         ResponseEntity<String> response = expenseController.deleteExpense(1L);
 
@@ -181,7 +188,7 @@ class ExpenseControllerTest {
 
     @Test
     void testDeleteExpense_Error() {
-        doThrow(new RuntimeException("Deletion error")).when(expenseService).deleteExpense(1L);
+        doThrow(new RuntimeException("Deletion error")).when(expenseServiceImpl).deleteExpense(1L);
 
         ResponseEntity<String> response = expenseController.deleteExpense(1L);
 

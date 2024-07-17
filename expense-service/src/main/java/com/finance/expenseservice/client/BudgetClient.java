@@ -3,6 +3,8 @@ package com.finance.expenseservice.client;
 import com.finance.expenseservice.dto.BudgetDTO;
 import com.finance.expenseservice.exception.ExpenseCustomException;
 import com.finance.expenseservice.model.Expense;
+import com.finance.expenseservice.model.ExpenseRequest;
+import com.finance.expenseservice.model.ExpenseResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +21,7 @@ public class BudgetClient {
         this.restTemplate = restTemplate;
     }
 
-    public BudgetDTO getBudget(Expense expense) {
+    public BudgetDTO getBudget(ExpenseResponse expense) {
         try{
             log.info("call Budget service to fetch the budgetData::");
             String expenseServiceUrl = UriComponentsBuilder.fromHttpUrl("http://localhost:8080/financeManagement/userCategoryBudget")

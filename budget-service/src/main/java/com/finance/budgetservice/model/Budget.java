@@ -3,12 +3,18 @@ package com.finance.budgetservice.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Entity
 @Table(name = "budgets", uniqueConstraints={@UniqueConstraint(columnNames = {"user_id", "category"})})
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Budget {
 
     @Id
